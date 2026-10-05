@@ -86,7 +86,7 @@ export class RiskService {
 
   private async persistAssessment(result: RiskPredictionResponse): Promise<void> {
     try {
-      const saved = await prisma.riskAssessment.create({
+      const saved = await prisma.urbanRisk.create({
         data: {
           locationId: result.locationId,
           timestamp: new Date(result.timestamp),
@@ -109,7 +109,7 @@ export class RiskService {
         await prisma.alert.create({
           data: {
             locationId: result.locationId,
-            riskAssessmentId: saved.id,
+            urbanRiskId: saved.id,
             title: `${result.hazardType} ${result.riskLevel} Risk Detected`,
             message: `Telemetry and satellite analysis detected elevated ${result.hazardType.toLowerCase()} vulnerability (Score: ${result.riskScore}/100).`,
             severity: result.alertSeverity as AlertSeverity,
@@ -126,7 +126,7 @@ export class RiskService {
   }
 
   async getAssessmentsByLocation(locationId: string) {
-    return prisma.riskAssessment.findMany({
+    return prisma.urbanRisk.findMany({
       where: { locationId },
       orderBy: { timestamp: 'desc' },
       take: 20,
