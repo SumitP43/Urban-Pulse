@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Investigation, NavigationPath } from '../types';
+import { CitationQuickGlance } from '../components/CitationQuickGlance';
+import { SmartSummary } from '../components/SmartSummary';
 
 interface OverviewDashboardViewProps {
   investigations: Investigation[];
@@ -52,6 +54,9 @@ export const OverviewDashboardView: React.FC<OverviewDashboardViewProps> = ({
                 <span className="material-symbols-outlined text-[15px]">verified</span>
                 <span className="font-citation-ref text-citation-ref uppercase font-bold tracking-wider">
                   EVIDENCE-BACKED AUTONOMOUS DISCOVERY PLATFORM
+                </span>
+                <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-bold">
+                  Platform data
                 </span>
               </div>
               <h1 className="font-display-hero text-display-hero text-dark-surface tracking-tight mt-2">
@@ -361,15 +366,25 @@ export const OverviewDashboardView: React.FC<OverviewDashboardViewProps> = ({
                     <span className="material-symbols-outlined text-[16px] text-provenance-purple">link</span>
                     <span>Citations:</span>
                     {inv.citations.map((c, idx) => (
-                      <button
+                      <CitationQuickGlance
                         key={idx}
-                        type="button"
-                        onClick={() => onInspectCitation(c)}
-                        className="text-primary hover:underline cursor-pointer font-citation-ref font-semibold"
-                      >
-                        [{c}]
-                      </button>
+                        identifier={c}
+                        label={`[${c}]`}
+                        onInspectFullCitation={onInspectCitation}
+                      />
                     ))}
+                  </div>
+
+                  {/* Smart Summary of Investigation */}
+                  <div className="pt-2 border-t border-border-subtle/50">
+                    <SmartSummary
+                      title={inv.title}
+                      content={inv.summary}
+                      publisher={inv.city}
+                      category={inv.domainLabel}
+                      sourceId={inv.id}
+                      compact={true}
+                    />
                   </div>
                 </div>
 

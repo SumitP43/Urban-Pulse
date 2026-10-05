@@ -71,6 +71,9 @@ export const DiscoveriesFindingsView: React.FC<DiscoveriesFindingsViewProps> = (
                 <span className="font-micro-meta text-micro-meta text-text-muted uppercase tracking-wider">
                   Audit Protocol NCT-D24
                 </span>
+                <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-bold">
+                  Platform data
+                </span>
               </div>
               <h1 className="font-headline-lg text-headline-lg text-dark-surface tracking-tight">
                 Discovered Urban Problems &amp; Findings
@@ -491,6 +494,18 @@ export const DiscoveriesFindingsView: React.FC<DiscoveriesFindingsViewProps> = (
                   <p className="leading-relaxed bg-brand-tint/60 p-2 rounded text-dark-surface font-label-code text-label-code border border-primary/20">
                     {activeSource.verbatimExcerpt}
                   </p>
+                </div>
+
+                {/* Smart Summary of Source Document */}
+                <div className="pt-2 border-t border-border-subtle/50">
+                  <SmartSummary
+                    title={activeSource.title}
+                    content={activeSource.verbatimExcerpt || activeSource.summary || activeSource.title}
+                    publisher={activeSource.meta}
+                    category={activeSource.documentType}
+                    sourceId={activeSource.id}
+                    compact={true}
+                  />
                 </div>
 
                 {/* Provenance & Hash */}

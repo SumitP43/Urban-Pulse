@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Source, Finding, Investigation } from '../types';
+import { CitationQuickGlance } from '../components/CitationQuickGlance';
+import { SmartSummary } from '../components/SmartSummary';
+
 
 interface ViewProps {
   sources: Source[];
@@ -92,7 +95,7 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
             <table className="w-full text-left font-body-compact text-xs">
               <thead className="bg-surface-canvas text-text-muted uppercase tracking-wider font-bold">
                 <tr>
-                  <th className="p-3">Ward Number & Name</th>
+                  <th className="p-3">Ward Number &amp; Name</th>
                   <th className="p-3">Scheduled Buses</th>
                   <th className="p-3">Turnout Deficit %</th>
                   <th className="p-3">311 Complaints</th>
@@ -108,7 +111,7 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
                   <td className="p-3 font-mono font-bold">172 / 10k</td>
                   <td className="p-3 font-mono text-critical-red">+18.4 (High Outlier)</td>
                   <td className="p-3">
-                    <button type="button" onClick={() => onInspectCitation('SRC-01')} className="font-citation-ref text-primary hover:underline">[SRC-01 p.44]</button>
+                    <CitationQuickGlance identifier="SRC-01" label="[SRC-01 p.44]" source={sources.find(s => s.id === 'SRC-01')} onInspectFullCitation={onInspectCitation} />
                   </td>
                 </tr>
                 <tr className="hover:bg-surface-canvas">
@@ -118,7 +121,7 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
                   <td className="p-3 font-mono font-bold">184 / 10k</td>
                   <td className="p-3 font-mono text-critical-red">+21.1 (High Outlier)</td>
                   <td className="p-3">
-                    <button type="button" onClick={() => onInspectCitation('SRC-03')} className="font-citation-ref text-primary hover:underline">[SRC-03 p.112]</button>
+                    <CitationQuickGlance identifier="SRC-03" label="[SRC-03 p.112]" source={sources.find(s => s.id === 'SRC-03')} onInspectFullCitation={onInspectCitation} />
                   </td>
                 </tr>
                 <tr className="hover:bg-surface-canvas">
@@ -128,7 +131,7 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
                   <td className="p-3 font-mono font-bold">148 / 10k</td>
                   <td className="p-3 font-mono text-slate-600">+4.2 (Expected)</td>
                   <td className="p-3">
-                    <button type="button" onClick={() => onInspectCitation('SRC-01')} className="font-citation-ref text-primary hover:underline">[SRC-01 p.46]</button>
+                    <CitationQuickGlance identifier="SRC-01" label="[SRC-01 p.46]" source={sources.find(s => s.id === 'SRC-01')} onInspectFullCitation={onInspectCitation} />
                   </td>
                 </tr>
                 <tr className="hover:bg-surface-canvas">
@@ -138,7 +141,7 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
                   <td className="p-3 font-mono font-bold">122 / 10k</td>
                   <td className="p-3 font-mono text-slate-600">-1.8 (Expected)</td>
                   <td className="p-3">
-                    <button type="button" onClick={() => onInspectCitation('SRC-02')} className="font-citation-ref text-primary hover:underline">[SRC-02 Logs]</button>
+                    <CitationQuickGlance identifier="SRC-02" label="[SRC-02 Logs]" source={sources.find(s => s.id === 'SRC-02')} onInspectFullCitation={onInspectCitation} />
                   </td>
                 </tr>
                 <tr className="hover:bg-surface-canvas">
@@ -148,17 +151,22 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
                   <td className="p-3 font-mono font-bold">160 / 10k</td>
                   <td className="p-3 font-mono text-critical-red">+12.6 (High Outlier)</td>
                   <td className="p-3">
-                    <button type="button" onClick={() => onInspectCitation('SRC-04')} className="font-citation-ref text-primary hover:underline">[SRC-04 GIS]</button>
+                    <CitationQuickGlance identifier="SRC-04" label="[SRC-04 GIS]" source={sources.find(s => s.id === 'SRC-04')} onInspectFullCitation={onInspectCitation} />
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          {/* Data-origin badge */}
+          <div className="pt-2 flex justify-end">
+            <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-bold">Platform data</span>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 
 // 2. DOCUMENT INTELLIGENCE VIEW
 export const DocumentIntelligenceView: React.FC<ViewProps> = ({ sources, onInspectCitation }) => {
@@ -296,6 +304,15 @@ export const SourcesDatasetsView: React.FC<ViewProps> = ({ sources, onInspectCit
 
 // 4. RESEARCH REPORTS VIEW
 export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findings, sources, onOpenExport }) => {
+  const [sessionHistory, setSessionHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/research/history')
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setSessionHistory(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="p-space-lg space-y-space-lg max-w-7xl mx-auto w-full">
       <div className="bg-surface-card rounded-xl shadow-sm p-space-lg border border-border-subtle space-y-6">
@@ -311,28 +328,31 @@ export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findin
               Compiled by Autonomous Urban Research Protocol NCT-D24 for Dr. Rajesh Varma
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onOpenExport}
-            className="px-4 py-2 rounded-lg bg-primary-container hover:bg-brand-hover text-on-primary font-semibold text-xs flex items-center gap-2 cursor-pointer shadow-sm"
-          >
-            <span className="material-symbols-outlined text-[16px]">download</span>
-            <span>Download Formatted PDF</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-bold">Platform data</span>
+            <button
+              type="button"
+              onClick={onOpenExport}
+              className="px-4 py-2 rounded-lg bg-primary-container hover:bg-brand-hover text-on-primary font-semibold text-xs flex items-center gap-2 cursor-pointer shadow-sm"
+            >
+              <span className="material-symbols-outlined text-[16px]">download</span>
+              <span>Download Formatted PDF</span>
+            </button>
+          </div>
         </div>
 
         {/* Executive Summary */}
         <div className="space-y-3">
           <h2 className="font-headline-sm text-dark-surface font-bold">1. Executive Summary &amp; Statutory Drivers</h2>
           <p className="font-body-default text-slate-700 leading-relaxed">
-            Over a four-year cross-validation window (2022–2025), analysis of 32 official government reports, Comptroller & Auditor General (CAG) audit observations, and 1.42M geotagged civic grievances demonstrates that East Delhi peripheral wards experience a systemic <strong className="text-critical-red">34.2% peak-hour transit bus deficit</strong>. Rather than traffic congestion delays, empirical evidence confirms that depot chassis non-attendance and unassigned route transfers constitute the primary root causes (Pearson r = 0.814, p &lt; 0.001).
+            Over a four-year cross-validation window (2022–2025), analysis of 32 official government reports, Comptroller &amp; Auditor General (CAG) audit observations, and 1.42M geotagged civic grievances demonstrates that East Delhi peripheral wards experience a systemic <strong className="text-critical-red">34.2% peak-hour transit bus deficit</strong>. Rather than traffic congestion delays, empirical evidence confirms that depot chassis non-attendance and unassigned route transfers constitute the primary root causes (Pearson r = 0.814, p &lt; 0.001).
           </p>
         </div>
 
         {/* Synthesized Findings Grid */}
         <div className="space-y-4">
           <h2 className="font-headline-sm text-dark-surface font-bold">2. Corroborated Findings &amp; Citation Evidence</h2>
-          {findings.map((f, i) => (
+          {findings.map((f) => (
             <div key={f.id} className="p-4 bg-surface-canvas rounded-lg border border-border-subtle space-y-2">
               <div className="flex items-center justify-between">
                 <span className="font-citation-ref text-xs text-primary font-bold">{f.findingNumber}</span>
@@ -344,6 +364,16 @@ export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findin
               <p className="font-body-compact text-slate-700 leading-relaxed">{f.narrative}</p>
               <div className="flex items-center gap-2 text-xs text-text-muted font-mono pt-1">
                 <span>Wards Affected: {f.affectedWards.join(', ')}</span>
+              </div>
+              <div className="pt-2 border-t border-border-subtle/50">
+                <SmartSummary
+                  title={f.title}
+                  content={`${f.title}. ${f.narrative}`}
+                  publisher="Urban Research Protocol"
+                  category={f.domain || 'Urban Research'}
+                  sourceId={f.id}
+                  compact={true}
+                />
               </div>
             </div>
           ))}
@@ -359,9 +389,54 @@ export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findin
           </ul>
         </div>
       </div>
+
+      {/* Session Research History */}
+      <div className="bg-surface-card rounded-xl shadow-sm p-space-lg border border-border-subtle space-y-4">
+        <div className="flex items-center justify-between border-b border-border-subtle pb-3">
+          <div className="flex items-center gap-2 font-headline-sm text-sm font-bold text-dark-surface">
+            <span className="material-symbols-outlined text-[18px] text-primary">history</span>
+            <span>Web Research Session History</span>
+          </div>
+          <span className="font-citation-ref text-[10px] text-text-muted font-bold">{sessionHistory.length} SESSIONS</span>
+        </div>
+        {sessionHistory.length > 0 ? (
+          <div className="divide-y divide-border-subtle">
+            {sessionHistory.map((item) => (
+              <div key={item.id} className="py-3 flex items-start justify-between gap-4">
+                <div className="min-w-0 space-y-0.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-citation-ref text-[10px] text-primary font-bold">{item.location || 'General'}</span>
+                    <span className="font-citation-ref text-[10px] text-text-muted">{item.category}</span>
+                    <span className="font-citation-ref text-[10px] text-text-muted">
+                      {new Date(item.timestamp).toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <div className="font-body-compact text-sm font-semibold text-dark-surface line-clamp-1">{item.query}</div>
+                  <p className="font-body-compact text-xs text-text-muted line-clamp-2">{item.summary}</p>
+                  <span className="text-[10px] font-label-code text-text-muted">{item.sourcesCount || 0} Sources</span>
+                </div>
+                <a
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); window.location.hash = `web-intelligence`; }}
+                  className="shrink-0 px-3 py-1.5 rounded-lg bg-brand-tint text-primary border border-primary/20 text-xs font-bold hover:bg-primary-container hover:text-on-primary transition-colors cursor-pointer flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-[13px]">replay</span>
+                  <span>Reopen</span>
+                </a>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 text-center text-xs text-text-muted space-y-1">
+            <span className="material-symbols-outlined text-[28px]">history</span>
+            <p>No research sessions yet. Run a web intelligence search to build history.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
 
 // 5. KNOWLEDGE GRAPH VIEW
 export const KnowledgeGraphView: React.FC<ViewProps> = ({ sources, findings, onInspectCitation }) => {

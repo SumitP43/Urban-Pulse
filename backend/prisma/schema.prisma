@@ -1,0 +1,295 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+enum Role {
+  ADMIN
+  RESEARCHER
+  ANALYST
+  USER
+}
+
+enum DataOrigin {
+  LIVE
+  SEED
+  DERIVED
+  PREDICTED
+}
+
+enum RiskLevel {
+  VERY_LOW
+  LOW
+  MODERATE
+  HIGH
+  CRITICAL
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum HazardType {
+  FLOOD
+  HEAT
+  AIR_POLLUTION
+  WATER_STRESS
+  MULTI_HAZARD
+}
+
+enum AQICategory {
+  GOOD
+  SATISFACTORY
+  MODERATE
+  POOR
+  VERY_POOR
+  SEVERE
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  passwordHash String
+  name         String
+  role         Role           @default(USER)
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  tokens       RefreshToken[]
+  sessions     ResearchSession[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String    @unique
+  familyId    String
+  isRevoked   Boolean   @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+
+  @@index([userId])
+  @@index([familyId])
+  @@map("refresh_tokens")
+}
+
+model Location {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  district    String?
+  state       String
+  country     String   @default("India")
+  latitude    Float
+  longitude   Float
+  areaKm2     Float?
+  population  Int?
+  
+  // PostGIS spatial columns
+  locationPoint    Unsupported("geometry(Point, 4326)")?
+  boundaryPolygon  Unsupported("geometry(Geometry, 4326)")?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  weatherReadings       WeatherReading[]
+  airQualityReadings    AirQualityReading[]
+  satelliteReadings     SatelliteReading[]
+  environmentalReadings EnvironmentalReading[]
+  riskAssessments       RiskAssessment[]
+  alerts                Alert[]
+
+  @@index([latitude, longitude])
+  @@map("locations")
+}
+
+model WeatherReading {
+  id                  String     @id @default(uuid())
+  locationId          String
+  location            Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  timestamp           DateTime
+  sourceId            String     // e.g., "open-meteo"
+  dataOrigin          DataOrigin @default(LIVE)
+  temperatureC        Float
+  relativeHumidityPct Float
+  windSpeedMs         Float
+  windDirectionDeg    Float?
+  surfacePressureHpa  Float?
+  precipitationMm     Float      @default(0.0)
+  cloudCoverPct       Float?
+  uvIndex             Float?
+  rawPayload          Json?
+  createdAt           DateTime   @default(now())
+
+  @@unique([locationId, timestamp, sourceId])
+  @@index([locationId, timestamp])
+  @@map("weather_readings")
+}
+
+model AirQualityReading {
+  id                  String       @id @default(uuid())
+  locationId          String
+  location            Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  timestamp           DateTime
+  sourceId            String       // e.g., "openaq-v3", "cpcb"
+  dataOrigin          DataOrigin   @default(LIVE)
+  pm25                Float?
+  pm10                Float?
+  no2                 Float?
+  so2                 Float?
+  co                  Float?
+  o3                  Float?
+  aqi                 Float?       // CPCB NAQI calculated value
+  aqiCategory         AQICategory?
+  prominentPollutant  String?
+  rawPayload          Json?
+  createdAt           DateTime     @default(now())
+
+  @@unique([locationId, timestamp, sourceId])
+  @@index([locationId, timestamp])
+  @@map("air_quality_readings")
+}
+
+model SatelliteReading {
+  id                  String     @id @default(uuid())
+  locationId          String
+  location            Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  timestamp           DateTime
+  sourceId            String     // "sentinel-2", "landsat-8", "modis"
+  dataOrigin          DataOrigin @default(DERIVED)
+  ndvi                Float?     // Normalized Difference Vegetation Index [-1, 1]
+  ndwi                Float?     // Normalized Difference Water Index [-1, 1]
+  ndbi                Float?     // Normalized Difference Built-up Index [-1, 1]
+  landSurfaceTempC    Float?     // Derived from Landsat / MODIS (NOT Sentinel-2)
+  cloudCoveragePct    Float?
+  rawPayload          Json?
+  createdAt           DateTime   @default(now())
+
+  @@unique([locationId, timestamp, sourceId])
+  @@index([locationId, timestamp])
+  @@map("satellite_readings")
+}
+
+model EnvironmentalReading {
+  id                  String     @id @default(uuid())
+  locationId          String
+  location            Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  timestamp           DateTime
+  dataOrigin          DataOrigin @default(DERIVED)
+  temperatureC        Float
+  humidityPct         Float
+  heatIndexC          Float?     // Rothfusz regression derived heat index
+  aqi                 Float?
+  prominentPollutant  String?
+  ndvi                Float?
+  ndwi                Float?
+  floodRiskScore      Float?     // 0-100
+  heatRiskScore       Float?     // 0-100
+  overallRiskScore    Float?     // 0-100
+  createdAt           DateTime   @default(now())
+
+  @@unique([locationId, timestamp])
+  @@index([locationId, timestamp])
+  @@map("environmental_readings")
+}
+
+model RiskAssessment {
+  id                    String     @id @default(uuid())
+  locationId            String
+  location              Location   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  timestamp             DateTime
+  hazardType            HazardType
+  riskScore             Float      // [0, 100]
+  riskLevel             RiskLevel
+  confidence            Float      // [0.0, 1.0] reflecting completeness & freshness
+  inputCompletenessPct  Float      // [0, 100] percentage of necessary inputs available
+  modelName             String
+  modelVersion          String
+  modelType             String     // "baseline" | "trained"
+  features              Json       // Exact feature vector fed into prediction
+  explanation           Json       // Rule-based / SHAP explanation breakdown
+  dataOrigin            DataOrigin @default(PREDICTED)
+  createdAt             DateTime   @default(now())
+
+  alerts                Alert[]
+
+  @@index([locationId, timestamp])
+  @@index([hazardType, riskLevel])
+  @@map("risk_assessments")
+}
+
+model Alert {
+  id                  String         @id @default(uuid())
+  locationId          String
+  location            Location       @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  riskAssessmentId    String?
+  riskAssessment      RiskAssessment? @relation(fields: [riskAssessmentId], references: [id], onDelete: SetNull)
+  title               String
+  message             String
+  severity            AlertSeverity
+  status              AlertStatus    @default(ACTIVE)
+  hazardType          HazardType
+  dataOrigin          DataOrigin     @default(DERIVED)
+  expiresAt           DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  @@index([locationId, status])
+  @@index([severity, status])
+  @@map("alerts")
+}
+
+model ResearchSession {
+  id               String     @id @default(uuid())
+  userId           String?
+  user             User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  query            String
+  location         String
+  category         String
+  timeRange        String
+  summary          String
+  sourcesCount     Int        @default(0)
+  resultPayload    Json
+  dataOrigin       DataOrigin @default(LIVE)
+  createdAt        DateTime   @default(now())
+
+  @@index([userId])
+  @@index([location, category])
+  @@map("research_sessions")
+}
+
+model CitationRecord {
+  id               String     @id @default(uuid())
+  identifier       String     @unique
+  title            String
+  publisher        String
+  url              String?
+  documentType     String
+  reliabilityTier  String
+  sha256           String
+  isAccessible     Boolean    @default(true)
+  lastCheckedAt    DateTime   @default(now())
+  httpStatus       Int?
+  rawMetadata      Json?
+  createdAt        DateTime   @default(now())
+
+  @@map("citation_records")
+}

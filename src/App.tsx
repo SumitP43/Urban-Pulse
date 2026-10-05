@@ -57,17 +57,29 @@ export default function App() {
     }
   }, [isDark]);
 
-  // Handle citation inspection from anywhere
+  // Handle citation inspection from anywhere (including web-src-* live sources)
   const handleInspectCitation = (identifierOrId: string) => {
     const cleanId = identifierOrId.replace('[', '').replace(']', '').trim();
     const found = sources.find(
-      s => s.identifier === cleanId || s.id === cleanId || s.identifier.toLowerCase() === cleanId.toLowerCase()
+      s => s.identifier === cleanId || s.id === cleanId ||
+           s.identifier.toLowerCase() === cleanId.toLowerCase()
     );
     if (found) {
       setInspectingSource(found);
+    } else if (cleanId.startsWith('web-src-') || cleanId.startsWith('web-')) {
+      // Synthesise a lightweight source record for live web citations
+      setInspectingSource({
+        id: cleanId,
+        identifier: cleanId,
+        title: `Web Source: ${cleanId}`,
+        meta: 'Live web source • Google Search Grounding',
+        documentType: 'Web Article',
+        reliabilityTier: 'Web-Grounded',
+        summary: 'This citation was retrieved via real-time Google Search grounding. Open the primary source URL to review full content.',
+      } as any);
     } else {
-      // Fallback: pick first source matching or default
-      setInspectingSource(sources[0]);
+      // Generic fallback for unknown identifiers
+      setInspectingSource(sources[0] ?? null);
     }
   };
 
@@ -158,6 +170,8 @@ export default function App() {
             <WebIntelligenceView
               onNavigate={(path) => setCurrentPath(path)}
               initialQuery={webSearchQuery}
+              onOpenExport={() => setIsExportOpen(true)}
+              onInspectCitation={handleInspectCitation}
             />
           )}
 
@@ -265,23 +279,11 @@ export default function App() {
             />
           )}
 
-          {currentPath === 'research-history' && (
-            <OverviewDashboardView
-              investigations={investigations}
-              onNavigate={(path) => setCurrentPath(path)}
-              onOpenNewResearch={() => setIsNewResearchOpen(true)}
-              onSelectInvestigation={(inv) => {
-                setActiveInvestigation(inv);
-              }}
-              onInspectCitation={handleInspectCitation}
-            />
-          )}
-
-          {currentPath === 'saved-research' && (
-            <DiscoveriesFindingsView
-              findings={findings}
+          {(currentPath === 'research-history' || currentPath === 'saved-research') && (
+            <ResearchReportsView
               sources={sources}
-              onNavigate={(path) => setCurrentPath(path)}
+              findings={findings}
+              investigation={activeInvestigation}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
             />

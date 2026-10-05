@@ -263,9 +263,8 @@
   nav,
   button,
   input,
-  select,
   .no-print,
-  .print\\:hidden,
+  [class*="print:hidden"],
   .fixed.inset-0:not(.print-container) {
     display: none !important;
   }

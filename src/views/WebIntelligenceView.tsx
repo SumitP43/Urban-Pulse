@@ -3,6 +3,7 @@ import { WebResearchResponse, WebResearchSource, NavigationPath } from '../types
 import { UrbanEventTrendCharts } from '../components/UrbanEventTrendCharts';
 import { SmartSummary } from '../components/SmartSummary';
 import { ResearchResponseCards } from '../components/ResearchResponseCard';
+import { CitationQuickGlance } from '../components/CitationQuickGlance';
 
 interface WebIntelligenceViewProps {
   onNavigate: (path: NavigationPath) => void;
@@ -403,23 +404,44 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveTab('impact')}
-                    className={`px-3 py-1 rounded text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
-                      activeTab === 'impact' ? 'bg-surface-card text-primary shadow-xs font-bold' : 'text-text-muted hover:text-dark-surface'
+                    onClick={() => setActiveTab('seasonality')}
+                    className={`px-3 py-1 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 shrink-0 ${
+                      activeTab === 'seasonality' ? 'bg-surface-card text-primary shadow-xs font-bold' : 'text-text-muted hover:text-dark-surface'
                     }`}
                   >
-                    Urban Impact
+                    <span className="material-symbols-outlined text-[13px]">calendar_month</span>
+                    <span>Seasonality</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveTab('locations')}
-                    className={`px-3 py-1 rounded text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
-                      activeTab === 'locations' ? 'bg-surface-card text-primary shadow-xs font-bold' : 'text-text-muted hover:text-dark-surface'
+                    onClick={() => setActiveTab('history')}
+                    className={`px-3 py-1 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 shrink-0 ${
+                      activeTab === 'history' ? 'bg-surface-card text-primary shadow-xs font-bold' : 'text-text-muted hover:text-dark-surface'
                     }`}
                   >
-                    Locations ({researchData.relevantLocations?.length || 0})
+                    <span className="material-symbols-outlined text-[13px]">history</span>
+                    <span>History</span>
                   </button>
                 </div>
+
+                {/* Action strip: Live web source badge + Export */}
+                <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0">
+                  <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-bold dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800">
+                    Live web source
+                  </span>
+                  {onOpenExport && (
+                    <button
+                      type="button"
+                      onClick={onOpenExport}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-surface-canvas border border-border-subtle text-xs font-bold text-dark-surface hover:bg-surface-container transition-colors cursor-pointer"
+                      title="Export / Download as PDF"
+                    >
+                      <span className="material-symbols-outlined text-[14px] text-primary">picture_as_pdf</span>
+                      <span className="hidden sm:inline">Export</span>
+                    </button>
+                  )}
+                </div>
+
               </div>
 
               {/* TAB 1: EXECUTIVE BRIEF */}
@@ -458,19 +480,38 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
                       <span>2. Key Findings</span>
                     </div>
                     <div className="space-y-2">
-                      {researchData.keyFindings?.map((finding, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-start gap-2.5 p-3 rounded-lg bg-surface-canvas border border-border-subtle"
-                        >
-                          <span className="font-citation-ref text-citation-ref px-1.5 py-0.5 rounded bg-brand-tint text-primary font-bold shrink-0 mt-0.5">
-                            #{idx + 1}
-                          </span>
-                          <p className="font-body-compact text-body-compact text-dark-surface leading-snug">
-                            {finding}
-                          </p>
-                        </div>
-                      ))}
+                      {researchData.keyFindings?.map((finding, idx) => {
+                        const src = researchData.sources?.[idx % (researchData.sources?.length || 1)];
+                        const srcId = src?.id || `web-src-${idx + 1}`;
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-start gap-2.5 p-3 rounded-lg bg-surface-canvas border border-border-subtle"
+                          >
+                            <span className="font-citation-ref text-citation-ref px-1.5 py-0.5 rounded bg-brand-tint text-primary font-bold shrink-0 mt-0.5">
+                              #{idx + 1}
+                            </span>
+                            <p className="font-body-compact text-body-compact text-dark-surface leading-snug flex-1">
+                              {finding}
+                            </p>
+                            {onInspectCitation && (
+                              <CitationQuickGlance
+                                identifier={srcId}
+                                source={src ? {
+                                  id: src.id,
+                                  identifier: src.id,
+                                  title: src.title,
+                                  meta: src.publisher ? `${src.publisher} • Web` : 'Live web source',
+                                  summary: src.snippet,
+                                  reliabilityTier: 'Web-Grounded',
+                                } as any : undefined}
+                                label={`[${idx + 1}]`}
+                                onInspectFullCitation={onInspectCitation}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -728,78 +769,91 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
                 </div>
               )}
 
-              {/* TAB 3: URBAN IMPACT */}
-              {activeTab === 'impact' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-4 bg-surface-canvas rounded-lg border border-border-subtle space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-primary font-bold text-xs uppercase">
-                      <span className="material-symbols-outlined text-[16px]">engineering</span>
-                      <span>Infrastructure Impact</span>
+              {/* TAB: SEASONALITY */}
+              {activeTab === 'seasonality' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="font-micro-meta text-micro-meta uppercase tracking-wider text-text-muted font-bold flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px] text-primary">calendar_month</span>
+                      <span>Infrastructure Seasonality — Year-over-Year Cycles</span>
                     </div>
-                    <p className="font-body-compact text-xs text-dark-surface leading-relaxed">
-                      {researchData.urbanImpact?.infrastructure || 'Evaluated against municipal road, transit, and drainage baselines.'}
-                    </p>
+                    <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-bold dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800">
+                      Live web source
+                    </span>
                   </div>
-
-                  <div className="p-4 bg-surface-canvas rounded-lg border border-border-subtle space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-secondary font-bold text-xs uppercase">
-                      <span className="material-symbols-outlined text-[16px]">eco</span>
-                      <span>Environmental Risk</span>
+                  {researchData.trendAnalysis ? (
+                    <UrbanEventTrendCharts
+                      trendAnalysis={researchData.trendAnalysis}
+                      category={researchData.category}
+                      location={researchData.location}
+                      sources={researchData.sources}
+                      onSelectSource={() => setActiveTab('sources')}
+                      isComparisonEnabled={isComparisonEnabled}
+                      compareCity={compareCity}
+                      onToggleComparison={setIsComparisonEnabled}
+                      onChangeCompareCity={setCompareCity}
+                      defaultMetricMode="seasonality"
+                    />
+                  ) : (
+                    <div className="p-10 text-center text-sm text-text-muted bg-surface-canvas rounded-xl border border-dashed border-border-subtle space-y-2">
+                      <span className="material-symbols-outlined text-[32px]">calendar_month</span>
+                      <p className="font-semibold">Insufficient data for seasonality analysis</p>
+                      <p className="text-xs">Run a research query first to populate infrastructure trend data.</p>
                     </div>
-                    <p className="font-body-compact text-xs text-dark-surface leading-relaxed">
-                      {researchData.urbanImpact?.environmental || 'Direct implications on regional air quality, ambient temperatures, and watershed absorption.'}
-                    </p>
-                  </div>
-
-                  <div className="p-4 bg-surface-canvas rounded-lg border border-border-subtle space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-tertiary font-bold text-xs uppercase">
-                      <span className="material-symbols-outlined text-[16px]">policy</span>
-                      <span>Governance &amp; Policy</span>
-                    </div>
-                    <p className="font-body-compact text-xs text-dark-surface leading-relaxed">
-                      {researchData.urbanImpact?.governance || 'Municipal directives, statutory compliance notices, and budgetary provisions.'}
-                    </p>
-                  </div>
-
-                  <div className="p-4 bg-surface-canvas rounded-lg border border-border-subtle space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-critical-red font-bold text-xs uppercase">
-                      <span className="material-symbols-outlined text-[16px]">groups</span>
-                      <span>Citizen Mobility &amp; Health</span>
-                    </div>
-                    <p className="font-body-compact text-xs text-dark-surface leading-relaxed">
-                      {researchData.urbanImpact?.citizens || 'Transit commute delays, localized exposure risks, and citizen grievance escalation rates.'}
-                    </p>
-                  </div>
+                  )}
                 </div>
               )}
 
-              {/* TAB 4: RELEVANT LOCATIONS */}
-              {activeTab === 'locations' && (
+              {/* TAB: HISTORY */}
+              {activeTab === 'history' && (
                 <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {researchData.relevantLocations?.map((loc, idx) => (
-                      <div key={idx} className="p-3 bg-surface-canvas rounded-lg border border-border-subtle space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-body-compact font-bold text-dark-surface flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[16px] text-primary">pin_drop</span>
-                            <span>{loc.name}</span>
-                          </span>
-                          {loc.district && (
-                            <span className="font-citation-ref text-[10px] text-text-muted">{loc.district}</span>
-                          )}
-                        </div>
-                        <p className="font-body-compact text-xs text-text-body">{loc.details}</p>
-                        {loc.verifiedCoord && loc.latitude && loc.longitude && (
-                          <div className="font-citation-ref text-[10px] text-secondary font-semibold pt-1">
-                            Lat: {loc.latitude} • Lng: {loc.longitude} (Verified Spatial Node)
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  <div className="font-micro-meta text-micro-meta uppercase tracking-wider text-text-muted font-bold flex items-center justify-between">
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px] text-primary">history</span>
+                      <span>Research Session History</span>
+                    </span>
+                    <span className="font-citation-ref text-[10px] text-text-muted font-bold">{history.length} SESSIONS</span>
                   </div>
+                  {history.length > 0 ? (
+                    <div className="divide-y divide-border-subtle space-y-0">
+                      {history.map((item) => (
+                        <div
+                          key={item.id}
+                          className="py-3 flex items-start justify-between gap-4 group"
+                        >
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-citation-ref text-[10px] text-primary font-bold">{item.location || 'General'}</span>
+                              <span className="font-citation-ref text-[10px] text-text-muted">{item.category}</span>
+                              <span className="font-citation-ref text-[10px] text-text-muted">
+                                {new Date(item.timestamp).toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <div className="font-body-compact text-sm font-semibold text-dark-surface line-clamp-1">{item.query}</div>
+                            <p className="font-body-compact text-xs text-text-muted line-clamp-2">{item.summary}</p>
+                            <div className="text-[10px] font-label-code text-text-muted">{item.sourcesCount || 0} Sources retrieved</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleSelectHistory(item)}
+                            className="shrink-0 px-3 py-1.5 rounded-lg bg-brand-tint text-primary border border-primary/20 text-xs font-bold hover:bg-primary-container hover:text-on-primary transition-colors cursor-pointer flex items-center gap-1"
+                          >
+                            <span className="material-symbols-outlined text-[13px]">replay</span>
+                            <span>Reopen</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-10 text-center text-sm text-text-muted bg-surface-canvas rounded-xl border border-dashed border-border-subtle space-y-2">
+                      <span className="material-symbols-outlined text-[32px]">history</span>
+                      <p>No research sessions yet. Run a search above to build history.</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
+
           ) : (
             /* Initial State */
             <div className="bg-surface-card rounded-xl p-space-lg shadow-sm border border-border-subtle text-center py-12 space-y-3">

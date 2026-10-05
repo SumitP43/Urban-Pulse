@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CausalNode, Source, Finding } from '../types';
 import { CAUSAL_NODES } from '../data/mockData';
+import { CitationQuickGlance } from '../components/CitationQuickGlance';
 
 interface CrossSourceAnalysisViewProps {
   sources: Source[];
@@ -177,18 +178,12 @@ export const CrossSourceAnalysisView: React.FC<CrossSourceAnalysisViewProps> = (
                       }`}>
                         {node.stageName}
                       </span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onInspectCitation(node.sourceTag.replace('[', '').replace(']', ''));
-                        }}
-                        className={`font-citation-ref text-citation-ref px-1.5 py-0.5 rounded font-bold hover:underline cursor-pointer ${
-                          isBottleneck ? 'bg-error-container text-on-error-container' : isImpact ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant' : isSynthesis ? 'bg-secondary-container text-on-secondary-container' : 'bg-brand-tint text-primary'
-                        }`}
-                      >
-                        {node.sourceTag}
-                      </button>
+                      <CitationQuickGlance
+                        identifier={node.sourceTag.replace('[', '').replace(']', '')}
+                        label={node.sourceTag}
+                        source={sources.find(s => s.id === node.sourceTag.replace('[', '').replace(']', '') || s.identifier === node.sourceTag.replace('[', '').replace(']', ''))}
+                        onInspectFullCitation={onInspectCitation}
+                      />
                     </div>
 
                     <div className="flex items-center gap-1.5 pt-1">
@@ -438,8 +433,11 @@ export const CrossSourceAnalysisView: React.FC<CrossSourceAnalysisViewProps> = (
                   Relational Finding Deduction
                 </span>
                 <p className="font-body-compact text-body-compact text-text-body">
-                  The strong linear correlation (<span className="font-label-code text-label-code font-bold">r = 0.814</span>) confirms that 311 commuter grievances in peripheral clusters are directly driven by depot route unassignments (<button type="button" onClick={() => onInspectCitation('SRC-01')} className="font-citation-ref text-citation-ref px-1 rounded bg-brand-tint text-primary font-bold cursor-pointer hover:underline">[SRC-01]</button>), rejecting the hypothesis that delays were merely caused by temporary road traffic congestion.
+                  The strong linear correlation (<span className="font-label-code text-label-code font-bold">r = 0.814</span>) confirms that 311 commuter grievances in peripheral clusters are directly driven by depot route unassignments (<CitationQuickGlance identifier="SRC-01" label="[SRC-01]" source={sources.find(s => s.id === 'SRC-01')} onInspectFullCitation={onInspectCitation} />), rejecting the hypothesis that delays were merely caused by temporary road traffic congestion.
                 </p>
+                <div className="flex items-center justify-end pt-1">
+                  <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-bold">Platform data</span>
+                </div>
               </div>
             </div>
           </div>
@@ -587,13 +585,12 @@ export const CrossSourceAnalysisView: React.FC<CrossSourceAnalysisViewProps> = (
                   <tr key={s.id} className="hover:bg-surface-canvas/60 transition-colors">
                     <td className="py-3 px-space-md">
                       <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => onInspectCitation(s.identifier)}
-                          className="font-citation-ref text-citation-ref px-1.5 py-0.5 rounded bg-brand-tint text-primary font-bold hover:underline cursor-pointer"
-                        >
-                          [{s.identifier}]
-                        </button>
+                        <CitationQuickGlance
+                          identifier={s.identifier}
+                          label={`[${s.identifier}]`}
+                          source={s}
+                          onInspectFullCitation={onInspectCitation}
+                        />
                         <div className="flex flex-col">
                           <span className="font-body-medium text-body-medium font-semibold text-dark-surface">
                             {s.title}
@@ -604,6 +601,7 @@ export const CrossSourceAnalysisView: React.FC<CrossSourceAnalysisViewProps> = (
                         </div>
                       </div>
                     </td>
+
                     <td className="py-3 px-space-md">
                       <span className="font-label-code text-label-code px-2 py-0.5 rounded bg-surface-canvas text-text-body border border-border-subtle">
                         {s.documentType}

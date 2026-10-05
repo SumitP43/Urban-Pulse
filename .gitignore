@@ -10,3 +10,9 @@ coverage/
 # Antigravity IDE internal files
 .antigravity/
 .vscode/
+
+# Python cache & test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
