@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { smartSummaryService, SmartSummaryResult } from '../services/smartSummaryService';
+import { DataOriginBadge } from './DataOriginBadge';
 
 export interface ResearchCardData {
   id: string;
@@ -110,6 +111,7 @@ export const ResearchResponseCard: React.FC<ResearchResponseCardProps> = ({
               {card.publisher}
             </span>
           )}
+          <DataOriginBadge origin="LIVE" compact />
           {card.category && (
             <span className="font-micro-meta text-[10px] text-text-muted uppercase">
               {card.category}

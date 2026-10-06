@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Source, Finding, Investigation } from '../types';
 import { CitationQuickGlance } from '../components/CitationQuickGlance';
 import { SmartSummary } from '../components/SmartSummary';
+import { DataOriginBadge } from '../components/DataOriginBadge';
 
 
 interface ViewProps {
@@ -268,6 +269,7 @@ export const SourcesDatasetsView: React.FC<ViewProps> = ({ sources, onInspectCit
                   <span className="font-citation-ref text-citation-ref px-1.5 py-0.5 rounded bg-brand-tint text-primary font-bold">
                     {s.identifier}
                   </span>
+                  <DataOriginBadge origin="SEED" compact />
                   <span className="font-micro-meta text-micro-meta uppercase px-1.5 py-0.5 rounded bg-surface-container text-dark-surface font-semibold">
                     {s.category}
                   </span>
@@ -329,7 +331,7 @@ export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findin
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-bold">Platform data</span>
+            <DataOriginBadge origin="DERIVED" compact />
             <button
               type="button"
               onClick={onOpenExport}

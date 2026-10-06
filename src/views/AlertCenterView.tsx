@@ -11,6 +11,7 @@ import {
   GrievanceScanAgentConfig
 } from '../types';
 import { CitationQuickGlance } from '../components/CitationQuickGlance';
+import { DataOriginBadge } from '../components/DataOriginBadge';
 import {
   MONITORED_CITIES,
   CityAlertProfile,
@@ -890,6 +891,7 @@ export const AlertCenterView: React.FC<AlertCenterViewProps> = ({
                           <span className="material-symbols-outlined text-[13px]">emergency</span>
                           <span>AGENT SPIKE ALERT</span>
                         </span>
+                        <DataOriginBadge origin="DERIVED" compact />
                         <span className="font-mono text-xs font-bold text-primary">
                           {spike.code}
                         </span>
@@ -897,7 +899,7 @@ export const AlertCenterView: React.FC<AlertCenterViewProps> = ({
                           Keyword: '{spike.keyword}'
                         </span>
                         <span className="text-[11px] font-citation-ref text-text-muted">
-                          â€¢ Detected {spike.relativeTime}
+                          • Detected {spike.relativeTime}
                         </span>
                       </div>
   
@@ -1331,9 +1333,10 @@ export const AlertCenterView: React.FC<AlertCenterViewProps> = ({
                             <span className="font-mono text-xs font-bold text-primary">
                               {g.ticketNumber}
                             </span>
+                            <DataOriginBadge origin="LIVE" compact />
   
                             <span className="text-text-muted text-[11px] font-citation-ref">
-                              â€¢ {g.relativeTime} ({g.timestamp})
+                              • {g.relativeTime} ({g.timestamp})
                             </span>
   
                             {/* Category Badge */}

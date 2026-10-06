@@ -3,6 +3,7 @@ import { Finding, NavigationPath, Source } from '../types';
 import { ASSETS } from '../data/mockData';
 import { SmartSummary } from '../components/SmartSummary';
 import { CitationQuickGlance } from '../components/CitationQuickGlance';
+import { DataOriginBadge } from '../components/DataOriginBadge';
 
 interface DiscoveriesFindingsViewProps {
   findings: Finding[];
@@ -253,6 +254,7 @@ export const DiscoveriesFindingsView: React.FC<DiscoveriesFindingsViewProps> = (
                       <span className="font-citation-ref text-citation-ref text-text-muted font-semibold">
                         CONFIDENCE {finding.confidence}%
                       </span>
+                      <DataOriginBadge origin="DERIVED" compact />
                     </div>
                     <div className="font-micro-meta text-micro-meta uppercase tracking-wider text-text-muted font-bold flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-[14px]">policy</span>

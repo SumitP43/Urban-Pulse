@@ -4,6 +4,7 @@ import { UrbanEventTrendCharts } from '../components/UrbanEventTrendCharts';
 import { SmartSummary } from '../components/SmartSummary';
 import { ResearchResponseCards } from '../components/ResearchResponseCard';
 import { CitationQuickGlance } from '../components/CitationQuickGlance';
+import { DataOriginBadge } from '../components/DataOriginBadge';
 
 interface WebIntelligenceViewProps {
   onNavigate: (path: NavigationPath) => void;
@@ -426,9 +427,7 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
 
                 {/* Action strip: Live web source badge + Export */}
                 <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0">
-                  <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-bold dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800">
-                    Live web source
-                  </span>
+                  <DataOriginBadge origin="LIVE" compact />
                   {onOpenExport && (
                     <button
                       type="button"
@@ -732,7 +731,10 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
               {activeTab === 'sources' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs text-text-muted pb-1">
-                    <span>Retrieved from Google Search Grounding Index</span>
+                    <div className="flex items-center gap-2">
+                      <span>Retrieved from Google Search Grounding Index</span>
+                      <DataOriginBadge origin="LIVE" compact />
+                    </div>
                     <span className="font-citation-ref text-primary font-bold">{researchData.sources?.length} Verified Sources</span>
                   </div>
 
@@ -777,9 +779,7 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
                       <span className="material-symbols-outlined text-[14px] text-primary">calendar_month</span>
                       <span>Infrastructure Seasonality — Year-over-Year Cycles</span>
                     </div>
-                    <span className="font-citation-ref text-[10px] px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-bold dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800">
-                      Live web source
-                    </span>
+                    <DataOriginBadge origin="LIVE" compact />
                   </div>
                   {researchData.trendAnalysis ? (
                     <UrbanEventTrendCharts

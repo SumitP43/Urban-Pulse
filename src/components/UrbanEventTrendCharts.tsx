@@ -23,6 +23,7 @@ import {
   InfrastructureProjectRecord
 } from '../services/seasonalityAnalytics';
 import { CitationQuickGlance } from './CitationQuickGlance';
+import { DataOriginBadge } from './DataOriginBadge';
 
 interface UrbanEventTrendChartsProps {
   trendAnalysis?: UrbanTrendAnalysis;
@@ -451,9 +452,7 @@ export const UrbanEventTrendCharts: React.FC<UrbanEventTrendChartsProps> = ({
               <span className="material-symbols-outlined text-[13px]">insights</span>
               <span>EVENT FREQUENCY &amp; TREND TELEMETRY</span>
             </span>
-            <span className="font-citation-ref text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-bold">
-              Live web source
-            </span>
+            <DataOriginBadge origin="LIVE" compact />
 
             {/* Regional Comparison Status Pill */}
             {isComparisonOn ? (
