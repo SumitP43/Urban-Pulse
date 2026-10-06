@@ -19,6 +19,7 @@ enum DataOrigin {
   SEED
   DERIVED
   PREDICTED
+  FALLBACK
 }
 
 enum RiskLevel {

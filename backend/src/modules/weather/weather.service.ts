@@ -45,6 +45,9 @@ export class WeatherService {
         await setCachedJson(`weather:current:${locationId}`, dbReading, 1800);
         return {
           ...dbReading,
+          source: dbReading.sourceId,
+          provider: 'open-meteo',
+          retrievedAt: dbReading.createdAt,
           locationName,
           fromCache: false,
         };
@@ -99,6 +102,8 @@ export class WeatherService {
 
     return {
       ...liveWeather,
+      source: liveWeather.sourceId,
+      provider: 'open-meteo',
       locationId,
       locationName,
       fromCache: false,
@@ -144,6 +149,8 @@ export class WeatherService {
 
     return {
       ...forecast,
+      source: forecast.sourceId,
+      provider: 'open-meteo',
       locationId,
       locationName,
       fromCache: false,

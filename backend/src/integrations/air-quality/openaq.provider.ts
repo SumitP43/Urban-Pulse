@@ -240,7 +240,7 @@ export class OpenAQProvider implements AirQualityProvider {
       pollutantsUsed: aqiResult.pollutantsUsed,
       calculationStatus: aqiResult.calculationStatus,
       stationName: 'UrbanPulse Baseline Virtual Monitor',
-      dataOrigin: 'SEED',
+      dataOrigin: 'FALLBACK',
       sourceId: `${this.providerName}-fallback`,
       sourceUrl: 'https://api.openaq.org',
       retrievedAt,

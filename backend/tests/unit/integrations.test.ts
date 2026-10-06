@@ -18,7 +18,7 @@ describe('External Integrations & Environmental Analytics', () => {
       expect(weather.relativeHumidityPct).toBeLessThanOrEqual(100);
       expect(weather.windSpeedMs).toBeGreaterThanOrEqual(0);
       expect(weather.precipitationMm).toBeGreaterThanOrEqual(0);
-      expect(['LIVE', 'SEED']).toContain(weather.dataOrigin);
+      expect(['LIVE', 'SEED', 'FALLBACK']).toContain(weather.dataOrigin);
       expect(weather.sourceId).toMatch(/^open-meteo/);
       expect(weather.timestamp).toBeInstanceOf(Date);
       expect(weather.retrievedAt).toBeInstanceOf(Date);
@@ -33,7 +33,7 @@ describe('External Integrations & Environmental Analytics', () => {
       expect(forecast.daily[0].date).toBeDefined();
       expect(forecast.daily[0].temperatureMaxC).toBeGreaterThanOrEqual(forecast.daily[0].temperatureMinC);
       expect(forecast.daily[0].precipitationSumMm).toBeGreaterThanOrEqual(0);
-      expect(['LIVE', 'SEED']).toContain(forecast.dataOrigin);
+      expect(['LIVE', 'SEED', 'FALLBACK']).toContain(forecast.dataOrigin);
     });
 
     it('maps WMO weather codes to human-readable condition descriptions', () => {
@@ -54,7 +54,7 @@ describe('External Integrations & Environmental Analytics', () => {
       const airQuality = await openAqProvider.fetchAirQuality(28.6139, 77.2090);
 
       expect(airQuality.sourceId).toMatch(/^openaq/);
-      expect(['LIVE', 'SEED']).toContain(airQuality.dataOrigin);
+      expect(['LIVE', 'SEED', 'FALLBACK']).toContain(airQuality.dataOrigin);
       expect(airQuality.retrievedAt).toBeInstanceOf(Date);
 
       // Verify CPCB NAQI calculation was performed
@@ -71,7 +71,7 @@ describe('External Integrations & Environmental Analytics', () => {
 
       expect(history.length).toBe(12);
       expect(history[0].timestamp.getTime()).toBeLessThan(history[11].timestamp.getTime());
-      expect(['LIVE', 'SEED']).toContain(history[0].dataOrigin);
+      expect(['LIVE', 'SEED', 'FALLBACK']).toContain(history[0].dataOrigin);
     });
   });
 

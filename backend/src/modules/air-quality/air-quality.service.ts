@@ -45,6 +45,9 @@ export class AirQualityService {
         await setCachedJson(`airquality:current:${locationId}`, dbReading, 3600);
         return {
           ...dbReading,
+          source: dbReading.sourceId,
+          provider: 'openaq',
+          retrievedAt: dbReading.createdAt,
           locationName,
           fromCache: false,
         };
@@ -105,6 +108,8 @@ export class AirQualityService {
 
     return {
       ...liveAq,
+      source: liveAq.sourceId,
+      provider: 'openaq',
       locationId,
       locationName,
       fromCache: false,

@@ -1,4 +1,4 @@
-export type DataOrigin = 'LIVE' | 'SEED' | 'DERIVED' | 'PREDICTED';
+export type DataOrigin = 'LIVE' | 'SEED' | 'DERIVED' | 'PREDICTED' | 'FALLBACK';
 
 export type Role = 'ADMIN' | 'RESEARCHER' | 'ANALYST' | 'USER';
 

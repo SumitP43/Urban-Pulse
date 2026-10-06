@@ -63,7 +63,7 @@ describe('Weather & Air Quality Integration Endpoints', () => {
       expect(json.data.relativeHumidityPct).toBeDefined();
       expect(json.data.windSpeedMs).toBeDefined();
       expect(json.data.sourceId).toMatch(/^open-meteo/);
-      expect(['LIVE', 'SEED']).toContain(json.data.dataOrigin);
+      expect(['LIVE', 'SEED', 'FALLBACK']).toContain(json.data.dataOrigin);
     });
 
     it('GET /api/v1/weather/forecast returns multi-day forecast array', async () => {
@@ -114,7 +114,7 @@ describe('Weather & Air Quality Integration Endpoints', () => {
       const json = JSON.parse(res.body);
       expect(json.success).toBe(true);
       expect(json.data.sourceId).toMatch(/^openaq/);
-      expect(['LIVE', 'SEED']).toContain(json.data.dataOrigin);
+      expect(['LIVE', 'SEED', 'FALLBACK']).toContain(json.data.dataOrigin);
     });
 
     it('GET /api/v1/air-quality/history requires locationId query parameter', async () => {
