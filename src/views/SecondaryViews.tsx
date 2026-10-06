@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Source, Finding, Investigation } from '../types';
+import { Source, Finding, Investigation, NavigationPath } from '../types';
 import { CitationQuickGlance } from '../components/CitationQuickGlance';
 import { SmartSummary } from '../components/SmartSummary';
 import { DataOriginBadge } from '../components/DataOriginBadge';
-
 
 interface ViewProps {
   sources: Source[];
@@ -11,6 +10,8 @@ interface ViewProps {
   investigation: Investigation;
   onInspectCitation: (sourceId: string) => void;
   onOpenExport: () => void;
+  onNavigate?: (path: NavigationPath) => void;
+  onReopenResearch?: (query: string) => void;
 }
 
 // 1. DATA ANALYSIS VIEW
@@ -305,7 +306,7 @@ export const SourcesDatasetsView: React.FC<ViewProps> = ({ sources, onInspectCit
 };
 
 // 4. RESEARCH REPORTS VIEW
-export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findings, sources, onOpenExport }) => {
+export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findings, sources, onOpenExport, onNavigate, onReopenResearch }) => {
   const [sessionHistory, setSessionHistory] = useState<any[]>([]);
 
   useEffect(() => {
@@ -417,14 +418,20 @@ export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findin
                   <p className="font-body-compact text-xs text-text-muted line-clamp-2">{item.summary}</p>
                   <span className="text-[10px] font-label-code text-text-muted">{item.sourcesCount || 0} Sources</span>
                 </div>
-                <a
-                  href="#"
-                  onClick={(e) => { e.preventDefault(); window.location.hash = `web-intelligence`; }}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onReopenResearch) {
+                      onReopenResearch(item.query);
+                    } else if (onNavigate) {
+                      onNavigate('web-intelligence');
+                    }
+                  }}
                   className="shrink-0 px-3 py-1.5 rounded-lg bg-brand-tint text-primary border border-primary/20 text-xs font-bold hover:bg-primary-container hover:text-on-primary transition-colors cursor-pointer flex items-center gap-1"
                 >
                   <span className="material-symbols-outlined text-[13px]">replay</span>
                   <span>Reopen</span>
-                </a>
+                </button>
               </div>
             ))}
           </div>

@@ -11,6 +11,7 @@ interface WebIntelligenceViewProps {
   initialQuery?: string;
   initialLocation?: string;
   initialCategory?: string;
+  initialTab?: 'brief' | 'sources' | 'trends' | 'seasonality' | 'history';
   onOpenExport?: () => void;
   onInspectCitation?: (sourceId: string) => void;
 }
@@ -20,6 +21,7 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
   initialQuery = '',
   initialLocation = 'Delhi',
   initialCategory = 'General Urban Research',
+  initialTab = 'brief',
   onOpenExport,
   onInspectCitation,
 }) => {
@@ -34,7 +36,7 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [researchData, setResearchData] = useState<WebResearchResponse | null>(null);
   const [history, setHistory] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'brief' | 'sources' | 'trends' | 'seasonality' | 'history'>('brief');
+  const [activeTab, setActiveTab] = useState<'brief' | 'sources' | 'trends' | 'seasonality' | 'history'>(initialTab);
   const [isComparisonEnabled, setIsComparisonEnabled] = useState(false);
   const [compareCity, setCompareCity] = useState('Bengaluru');
 
@@ -42,6 +44,18 @@ export const WebIntelligenceView: React.FC<WebIntelligenceViewProps> = ({
   useEffect(() => {
     fetchHistory();
   }, []);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (initialQuery && initialQuery !== query) {
+      setQuery(initialQuery);
+    }
+  }, [initialQuery]);
 
   const fetchHistory = async () => {
     try {

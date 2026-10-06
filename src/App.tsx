@@ -266,6 +266,11 @@ export default function App() {
               investigation={activeInvestigation}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
+              onNavigate={(path) => setCurrentPath(path)}
+              onReopenResearch={(q) => {
+                setWebSearchQuery(q);
+                setCurrentPath('web-intelligence');
+              }}
             />
           )}
 
@@ -279,13 +284,28 @@ export default function App() {
             />
           )}
 
-          {(currentPath === 'research-history' || currentPath === 'saved-research') && (
+          {currentPath === 'research-history' && (
+            <WebIntelligenceView
+              onNavigate={(path) => setCurrentPath(path)}
+              initialQuery={webSearchQuery}
+              initialTab="history"
+              onOpenExport={() => setIsExportOpen(true)}
+              onInspectCitation={handleInspectCitation}
+            />
+          )}
+
+          {currentPath === 'saved-research' && (
             <ResearchReportsView
               sources={sources}
               findings={findings}
               investigation={activeInvestigation}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
+              onNavigate={(path) => setCurrentPath(path)}
+              onReopenResearch={(q) => {
+                setWebSearchQuery(q);
+                setCurrentPath('web-intelligence');
+              }}
             />
           )}
 
