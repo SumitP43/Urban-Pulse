@@ -226,6 +226,7 @@ export default function App() {
               findings={findings}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
+              onNavigate={(path) => setCurrentPath(path)}
             />
           )}
 
@@ -236,6 +237,7 @@ export default function App() {
               investigation={activeInvestigation}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
+              onNavigate={(path) => setCurrentPath(path)}
             />
           )}
 
@@ -246,6 +248,7 @@ export default function App() {
               investigation={activeInvestigation}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
+              onNavigate={(path) => setCurrentPath(path)}
             />
           )}
 
@@ -256,6 +259,7 @@ export default function App() {
               investigation={activeInvestigation}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
+              onNavigate={(path) => setCurrentPath(path)}
             />
           )}
 
@@ -281,6 +285,7 @@ export default function App() {
               investigation={activeInvestigation}
               onInspectCitation={handleInspectCitation}
               onOpenExport={() => setIsExportOpen(true)}
+              onNavigate={(path) => setCurrentPath(path)}
             />
           )}
 

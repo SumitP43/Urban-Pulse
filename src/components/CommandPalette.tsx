@@ -97,7 +97,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               { path: 'web-intelligence' as NavigationPath, label: 'Web Intelligence (Google Search)', icon: 'travel_explore', section: 'RESEARCH', badge: 'LIVE WEB', keywords: 'web intelligence search assistant news google' },
               { path: 'alert-center' as NavigationPath, label: 'Civic Alert Center', icon: 'emergency', section: 'MONITOR', badge: 'LIVE 311', keywords: 'alert center 311 grievance emergency tickets' },
               { path: 'sources-and-datasets' as NavigationPath, label: 'Sources & Datasets', icon: 'database', section: 'LIBRARY', keywords: 'sources datasets ground truth archives' },
-              { path: 'research-reports' as NavigationPath, label: 'Reports & Saved Briefs', icon: 'description', section: 'LIBRARY', keywords: 'reports briefs export history download pdf' },
+              { path: 'document-intelligence' as NavigationPath, label: 'Document Intelligence & OCR Evidence', icon: 'document_scanner', section: 'RESEARCH', badge: 'OCR & PDF', keywords: 'document intelligence ocr pdf verification cag audit' },
+              { path: 'data-analysis' as NavigationPath, label: 'Data Analysis (Econometric & Spatial Regression)', icon: 'query_stats', section: 'RESEARCH', badge: 'REGRESSION', keywords: 'data analysis econometric spatial regression pearson ols' },
+              { path: 'knowledge-graph' as NavigationPath, label: 'Knowledge Graph & Topological Mesh', icon: 'hub', section: 'RESEARCH', badge: 'TOPOLOGY', keywords: 'knowledge graph topological evidence mesh nodes edges' },
+              { path: 'research-reports' as NavigationPath, label: 'Reports & Saved Briefs', icon: 'description', section: 'LIBRARY', keywords: 'reports briefs export download pdf' },
+              { path: 'research-history' as NavigationPath, label: 'Research Session History', icon: 'history', section: 'LIBRARY', badge: 'HISTORY', keywords: 'history past sessions searches queries web intelligence' },
               { path: 'settings' as NavigationPath, label: 'Settings', icon: 'settings', section: 'SYSTEM', keywords: 'settings preferences theme dark light confidence' },
               { path: 'documentation' as NavigationPath, label: 'Help & Guided Tour', icon: 'menu_book', section: 'SYSTEM', keywords: 'help tour documentation guide recon protocol' },
             ];

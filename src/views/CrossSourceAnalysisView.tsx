@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CausalNode, Source, Finding } from '../types';
+import { CausalNode, Source, Finding, NavigationPath } from '../types';
 import { CAUSAL_NODES } from '../data/mockData';
 import { CitationQuickGlance } from '../components/CitationQuickGlance';
 
@@ -8,13 +8,15 @@ interface CrossSourceAnalysisViewProps {
   findings: Finding[];
   onInspectCitation: (sourceId: string) => void;
   onOpenExport: () => void;
+  onNavigate?: (path: NavigationPath) => void;
 }
 
 export const CrossSourceAnalysisView: React.FC<CrossSourceAnalysisViewProps> = ({
   sources,
   findings,
   onInspectCitation,
-  onOpenExport
+  onOpenExport,
+  onNavigate
 }) => {
   const [selectedNodeIndex, setSelectedNodeIndex] = useState<number>(3); // Node 3 is active target by default
   const [activeTab, setActiveTab] = useState<'scatter' | 'wards' | 'residuals'>('scatter');
@@ -113,6 +115,29 @@ export const CrossSourceAnalysisView: React.FC<CrossSourceAnalysisViewProps> = (
                 </span>
               </div>
             </div>
+
+            {onNavigate && (
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => onNavigate('knowledge-graph')}
+                  className="px-2.5 py-1.5 rounded-lg bg-surface-canvas hover:bg-surface-container border border-border-subtle text-xs font-bold text-dark-surface flex items-center gap-1 cursor-pointer transition-colors"
+                  title="Explore full topological evidence mesh in Knowledge Graph"
+                >
+                  <span className="material-symbols-outlined text-[15px] text-primary">hub</span>
+                  <span>Knowledge Graph</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('data-analysis')}
+                  className="px-2.5 py-1.5 rounded-lg bg-surface-canvas hover:bg-surface-container border border-border-subtle text-xs font-bold text-dark-surface flex items-center gap-1 cursor-pointer transition-colors"
+                  title="Run Econometric & Spatial Regression in Data Analysis"
+                >
+                  <span className="material-symbols-outlined text-[15px] text-secondary">query_stats</span>
+                  <span>Data Analysis</span>
+                </button>
+              </div>
+            )}
 
             <button
               type="button"

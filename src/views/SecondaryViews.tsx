@@ -15,7 +15,7 @@ interface ViewProps {
 }
 
 // 1. DATA ANALYSIS VIEW
-export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onInspectCitation }) => {
+export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onInspectCitation, onNavigate }) => {
   const [selectedModel, setSelectedModel] = useState<'pearson' | 'spearman' | 'ols'>('pearson');
 
   return (
@@ -33,34 +33,46 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
               Quantitative modeling correlating 1.42M civic grievance rows with 14,200 GPS bus telemetry logs.
             </p>
           </div>
-          <div className="flex items-center gap-1.5 bg-surface-canvas p-1 rounded-lg border border-border-subtle">
-            <button
-              type="button"
-              onClick={() => setSelectedModel('pearson')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded cursor-pointer ${
-                selectedModel === 'pearson' ? 'bg-surface-card text-primary shadow-xs' : 'text-text-muted'
-              }`}
-            >
-              Pearson Correlation
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedModel('spearman')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded cursor-pointer ${
-                selectedModel === 'spearman' ? 'bg-surface-card text-primary shadow-xs' : 'text-text-muted'
-              }`}
-            >
-              Spearman Rank
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedModel('ols')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded cursor-pointer ${
-                selectedModel === 'ols' ? 'bg-surface-card text-primary shadow-xs' : 'text-text-muted'
-              }`}
-            >
-              OLS Multivariate
-            </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 bg-surface-canvas p-1 rounded-lg border border-border-subtle">
+              <button
+                type="button"
+                onClick={() => setSelectedModel('pearson')}
+                className={`px-3 py-1.5 text-xs font-semibold rounded cursor-pointer ${
+                  selectedModel === 'pearson' ? 'bg-surface-card text-primary shadow-xs' : 'text-text-muted'
+                }`}
+              >
+                Pearson Correlation
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('spearman')}
+                className={`px-3 py-1.5 text-xs font-semibold rounded cursor-pointer ${
+                  selectedModel === 'spearman' ? 'bg-surface-card text-primary shadow-xs' : 'text-text-muted'
+                }`}
+              >
+                Spearman Rank
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedModel('ols')}
+                className={`px-3 py-1.5 text-xs font-semibold rounded cursor-pointer ${
+                  selectedModel === 'ols' ? 'bg-surface-card text-primary shadow-xs' : 'text-text-muted'
+                }`}
+              >
+                OLS Multivariate
+              </button>
+            </div>
+            {onNavigate && (
+              <button
+                type="button"
+                onClick={() => onNavigate('discoveries-and-findings')}
+                className="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-semibold text-xs flex items-center gap-1 hover:bg-brand-hover transition-colors shrink-0 cursor-pointer shadow-xs"
+              >
+                <span>View Findings (8)</span>
+                <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -171,20 +183,34 @@ export const DataAnalysisView: React.FC<ViewProps> = ({ sources, findings, onIns
 
 
 // 2. DOCUMENT INTELLIGENCE VIEW
-export const DocumentIntelligenceView: React.FC<ViewProps> = ({ sources, onInspectCitation }) => {
+export const DocumentIntelligenceView: React.FC<ViewProps> = ({ sources, onInspectCitation, onNavigate }) => {
   return (
     <div className="p-space-lg space-y-space-lg max-w-7xl mx-auto w-full">
       <div className="bg-surface-card rounded-xl shadow-sm p-space-lg border border-border-subtle">
-        <div className="flex items-center gap-2 text-primary font-citation-ref text-xs uppercase font-bold">
-          <span className="material-symbols-outlined text-[18px]">document_scanner</span>
-          <span>OCR EXTRACTION & VECTORIZATION ENGINE</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-primary font-citation-ref text-xs uppercase font-bold">
+              <span className="material-symbols-outlined text-[18px]">document_scanner</span>
+              <span>OCR EXTRACTION & VECTORIZATION ENGINE</span>
+            </div>
+            <h1 className="font-headline-lg text-headline-lg text-dark-surface tracking-tight mt-1">
+              Document Intelligence &amp; PDF Auditing
+            </h1>
+            <p className="font-body-default text-text-muted mt-1">
+              Automated tabular parsing, OCR integrity validation (99.4% precision), and SHA-256 cryptographic notarization.
+            </p>
+          </div>
+          {onNavigate && (
+            <button
+              type="button"
+              onClick={() => onNavigate('cross-source-analysis')}
+              className="px-3.5 py-2 rounded-lg bg-primary text-on-primary font-semibold text-xs flex items-center gap-1.5 hover:bg-brand-hover transition-colors shrink-0 cursor-pointer shadow-xs"
+            >
+              <span>Cross-Source Analysis</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
+          )}
         </div>
-        <h1 className="font-headline-lg text-headline-lg text-dark-surface tracking-tight mt-1">
-          Document Intelligence &amp; PDF Auditing
-        </h1>
-        <p className="font-body-default text-text-muted mt-1">
-          Automated tabular parsing, OCR integrity validation (99.4% precision), and SHA-256 cryptographic notarization.
-        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           {sources.map((s) => (
@@ -227,7 +253,7 @@ export const DocumentIntelligenceView: React.FC<ViewProps> = ({ sources, onInspe
 };
 
 // 3. SOURCES & DATASETS VIEW
-export const SourcesDatasetsView: React.FC<ViewProps> = ({ sources, onInspectCitation }) => {
+export const SourcesDatasetsView: React.FC<ViewProps> = ({ sources, onInspectCitation, onNavigate }) => {
   const [filter, setFilter] = useState<string>('all');
   const filtered = filter === 'all' ? sources : sources.filter(s => s.category.toLowerCase().includes(filter.toLowerCase()));
 
@@ -289,13 +315,26 @@ export const SourcesDatasetsView: React.FC<ViewProps> = ({ sources, onInspectCit
                 <span className="font-citation-ref text-xs text-primary font-bold">
                   {s.findingsLinkedCount} Findings Linked
                 </span>
-                <button
-                  type="button"
-                  onClick={() => onInspectCitation(s.identifier)}
-                  className="px-3 py-1.5 rounded bg-primary text-on-primary font-body-compact text-xs font-semibold hover:bg-brand-hover transition-colors cursor-pointer"
-                >
-                  Inspect Citation
-                </button>
+                <div className="flex items-center gap-1.5">
+                  {onNavigate && (
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('document-intelligence')}
+                      className="px-2.5 py-1.5 rounded bg-surface-card border border-border-subtle text-dark-surface font-body-compact text-xs font-semibold hover:border-primary/50 transition-colors cursor-pointer flex items-center gap-1"
+                      title="Inspect PDF OCR transcript and verification in Document Intelligence"
+                    >
+                      <span className="material-symbols-outlined text-[13px] text-primary">document_scanner</span>
+                      <span>Document OCR</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => onInspectCitation(s.identifier)}
+                    className="px-3 py-1.5 rounded bg-primary text-on-primary font-body-compact text-xs font-semibold hover:bg-brand-hover transition-colors cursor-pointer"
+                  >
+                    Inspect Citation
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -448,20 +487,34 @@ export const ResearchReportsView: React.FC<ViewProps> = ({ investigation, findin
 
 
 // 5. KNOWLEDGE GRAPH VIEW
-export const KnowledgeGraphView: React.FC<ViewProps> = ({ sources, findings, onInspectCitation }) => {
+export const KnowledgeGraphView: React.FC<ViewProps> = ({ sources, findings, onInspectCitation, onNavigate }) => {
   return (
     <div className="p-space-lg space-y-space-lg max-w-7xl mx-auto w-full">
       <div className="bg-surface-card rounded-xl shadow-sm p-space-lg border border-border-subtle">
-        <div className="flex items-center gap-2 text-primary font-citation-ref text-xs uppercase font-bold">
-          <span className="material-symbols-outlined text-[18px]">hub</span>
-          <span>TOPOLOGICAL EVIDENCE MESH</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-primary font-citation-ref text-xs uppercase font-bold">
+              <span className="material-symbols-outlined text-[18px]">hub</span>
+              <span>TOPOLOGICAL EVIDENCE MESH</span>
+            </div>
+            <h1 className="font-headline-lg text-headline-lg text-dark-surface tracking-tight mt-1">
+              Knowledge Graph &amp; Entity Connections
+            </h1>
+            <p className="font-body-default text-text-muted mt-1">
+              Relational graph connecting statutory sources, extracted empirical entities, municipal wards, and synthesized problem theses.
+            </p>
+          </div>
+          {onNavigate && (
+            <button
+              type="button"
+              onClick={() => onNavigate('data-analysis')}
+              className="px-3.5 py-2 rounded-lg bg-primary text-on-primary font-semibold text-xs flex items-center gap-1.5 hover:bg-brand-hover transition-colors shrink-0 cursor-pointer shadow-xs"
+            >
+              <span>Econometric Regression</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
+          )}
         </div>
-        <h1 className="font-headline-lg text-headline-lg text-dark-surface tracking-tight mt-1">
-          Knowledge Graph &amp; Entity Connections
-        </h1>
-        <p className="font-body-default text-text-muted mt-1">
-          Relational graph connecting statutory sources, extracted empirical entities, municipal wards, and synthesized problem theses.
-        </p>
 
         {/* SVG Interactive Topology Diagram */}
         <div className="mt-6 bg-surface-canvas rounded-xl p-6 border border-border-subtle relative overflow-hidden flex items-center justify-center min-h-[420px]">
