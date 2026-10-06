@@ -102,3 +102,34 @@ The following files contain seeded/hardcoded data that will be progressively bac
 - Multi-layer spatial digital twin endpoints (GeoJSON polygons, heatmap grids).
 - Full frontend switchover from mock data to live backend APIs.
 - End-to-end integration and load testing.
+
+---
+
+## 5. Integration Execution Status & Evidence Workflow Verification
+
+All six architectural integration steps from the master brief have been implemented, tested, and verified:
+
+1. **STEP 1: Full System Audit & Discovery Preservation**
+   - Architectural audit conducted across all 15 views, modals, and controllers.
+   - Identified 3 specialized views: `DataAnalysisView` (Econometric & Spatial Regression), `DocumentIntelligenceView` (OCR & PDF Verification), and `KnowledgeGraphView` (Topological Evidence Mesh). All preserved, wired into `App.tsx`, and indexed in the Command Palette (`⌘K`).
+
+2. **STEP 2: Shared Intelligence Components Across All Views**
+   - Implemented `<DataOriginBadge />` supporting canonical origins (`LIVE`, `DERIVED`, `PREDICTED`, `FALLBACK`, `SEED`).
+   - Integrated into `WebIntelligenceView`, `UrbanEventTrendCharts`, `SecondaryViews` (`SourcesDatasetsView`, `ResearchReportsView`), `DiscoveriesFindingsView`, and `AlertCenterView`.
+   - Verified `<CitationQuickGlance />`, `<SmartSummary />`, and `<ExportReportModal />` triggers app-wide.
+
+3. **STEP 3: Shared Research & Intelligence History**
+   - Unified `research-history` navigation route in `App.tsx` to render `WebIntelligenceView` directly in `history` tab mode.
+   - Wired `ResearchReportsView` session history to enable 1-click `Reopen` directly into `WebIntelligenceView` with query state restored.
+
+4. **STEP 4: Research Evidence Workflow (Unbroken Chain)**
+   - Connected: `Sources & Datasets` → `Document Intelligence` (OCR inspection) → `Evidence/Citation Verification` (`CitationModal`) → `Cross-Source Relational Analysis` → `Knowledge Graph` & `Data Analysis` → `Discoveries & Findings` → `Reports` → `Export Modal`.
+   - Indexed all orphaned routes in `CommandPalette.tsx` for instantaneous keyboard access.
+
+5. **STEP 5: Urban Event Trends Consolidation**
+   - Validated single authoritative Regional Comparison control in `UrbanEventTrendCharts.tsx` toolbar with comparative benchmark overlay (`ON`/`OFF`), timeframe granularity (Monthly/Quarterly/Yearly), and metric modes.
+
+6. **STEP 6: Civic Alert Center & Diagnostics Isolation**
+   - Isolated Spike Simulators and automated Sentinel diagnostics into a dedicated `Testing & Diagnostics` tab guarded by `import.meta.env.DEV`.
+   - Cleaned top-level operational bar for production dispatchers.
+
