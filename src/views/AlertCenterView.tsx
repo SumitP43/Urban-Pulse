@@ -805,7 +805,7 @@ export const AlertCenterView: React.FC<AlertCenterViewProps> = ({
           </div>
         </div>
 
-        {/* Sentinel Controls & Simulator Actions */}
+        {/* Sentinel Controls & Diagnostics Action */}
         <div className="flex items-center gap-2 flex-wrap shrink-0">
           <button
             type="button"
@@ -820,40 +820,28 @@ export const AlertCenterView: React.FC<AlertCenterViewProps> = ({
             <span>{isScanning ? 'Scanning...' : 'Scan Now'}</span>
           </button>
 
-          {/* Spike Simulation Triggers - dev mode only */}
+          {/* Dev-only Diagnostic Tab Shortcut */}
           {import.meta.env.DEV && (
-            <>
             <button
               type="button"
-              onClick={handleInjectWaterloggingSpike}
-              className="px-2.5 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold hover:bg-blue-100 transition-colors flex items-center gap-1 cursor-pointer"
-              title="Simulate sudden influx of waterlogging complaints"
+              onClick={() => setActiveTab('agent-sentinel')}
+              className="px-2.5 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800 rounded-lg text-xs font-semibold hover:bg-amber-100 transition-colors flex items-center gap-1 cursor-pointer"
+              title="Open Testing / Diagnostics Console"
             >
-              <span className="material-symbols-outlined text-[14px]">water</span>
-              <span>+ Waterlogging Spike</span>
+              <span className="material-symbols-outlined text-[14px]">science</span>
+              <span>Testing / Diagnostics</span>
             </button>
-  
-            <button
-              type="button"
-              onClick={handleInjectRoadDamageSpike}
-              className="px-2.5 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-semibold hover:bg-amber-100 transition-colors flex items-center gap-1 cursor-pointer"
-              title="Simulate sudden influx of road damage / pothole complaints"
-            >
-              <span className="material-symbols-outlined text-[14px]">construction</span>
-              <span>+ Road Damage Spike</span>
-            </button>
-            </>
           )}
 
           <button
-              type="button"
-              onClick={() => setIsAgentConsoleOpen(true)}
-              className="p-1.5 bg-surface-canvas border border-border-subtle rounded-lg text-text-muted hover:text-dark-surface transition-colors cursor-pointer"
-              title="Open Agent Console & Diagnostics"
-            >
-              <span className="material-symbols-outlined text-[16px]">tune</span>
-            </button>
-          </div>
+            type="button"
+            onClick={() => setIsAgentConsoleOpen(true)}
+            className="p-1.5 bg-surface-canvas border border-border-subtle rounded-lg text-text-muted hover:text-dark-surface transition-colors cursor-pointer"
+            title="Open Agent Configuration"
+          >
+            <span className="material-symbols-outlined text-[16px]">tune</span>
+          </button>
+        </div>
         </div>
   
         {/* SECTION: PROACTIVE AGENT RESEARCH NOTIFICATIONS (WHEN SPIKES DETECTED) */}
@@ -1187,23 +1175,28 @@ export const AlertCenterView: React.FC<AlertCenterViewProps> = ({
                 <span className="material-symbols-outlined text-[15px]">ssid_chart</span>
                 <span>Recharts Telemetry &amp; Velocity</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('agent-sentinel')}
-                className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === 'agent-sentinel'
-                    ? 'bg-surface-card text-primary shadow-xs font-bold'
-                    : 'text-text-muted hover:text-dark-surface'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[15px] text-primary">psychology</span>
-                <span>Agent Sentinel Diagnostics</span>
-                {citySpikeAlerts.length > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-critical-red text-white">
-                    {citySpikeAlerts.length}
+              {import.meta.env.DEV && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('agent-sentinel')}
+                  className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    activeTab === 'agent-sentinel'
+                      ? 'bg-surface-card text-primary shadow-xs font-bold'
+                      : 'text-text-muted hover:text-dark-surface'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[15px] text-amber-500">science</span>
+                  <span>Testing &amp; Diagnostics</span>
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                    DEV
                   </span>
-                )}
-              </button>
+                  {citySpikeAlerts.length > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-critical-red text-white">
+                      {citySpikeAlerts.length}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
   
             {/* Quick Filter Controls for Stream */}
@@ -1743,7 +1736,7 @@ export const AlertCenterView: React.FC<AlertCenterViewProps> = ({
                               className="text-text-muted hover:text-critical-red cursor-pointer ml-0.5"
                               title={`Remove '${kw}'`}
                             >
-                              Ã—
+                              ×
                             </button>
                           </span>
                         );
