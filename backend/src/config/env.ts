@@ -17,6 +17,8 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60000),
+  WEATHER_INGEST_INTERVAL_MINUTES: z.coerce.number().int().positive().default(30),
+  AIR_QUALITY_INGEST_INTERVAL_MINUTES: z.coerce.number().int().positive().default(60),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
@@ -38,6 +40,8 @@ try {
     CORS_ORIGIN: process.env.CORS_ORIGIN,
     RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
     RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS,
+    WEATHER_INGEST_INTERVAL_MINUTES: process.env.WEATHER_INGEST_INTERVAL_MINUTES,
+    AIR_QUALITY_INGEST_INTERVAL_MINUTES: process.env.AIR_QUALITY_INGEST_INTERVAL_MINUTES,
   });
 } catch (error) {
   if (error instanceof z.ZodError) {

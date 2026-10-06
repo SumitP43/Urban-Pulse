@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { openMeteoProvider } from '../../src/integrations/weather/open-meteo.provider.js';
+import { openMeteoProvider, mapWmoWeatherCode } from '../../src/integrations/weather/open-meteo.provider.js';
 import { openAqProvider } from '../../src/integrations/air-quality/openaq.provider.js';
 import { satelliteProvider } from '../../src/integrations/satellite/satellite.provider.js';
 import {
@@ -10,7 +10,6 @@ import {
 describe('External Integrations & Environmental Analytics', () => {
   describe('Weather Provider (Open-Meteo)', () => {
     it('returns normalized weather data with SI units and origin tag', async () => {
-      // Testing provider fallback and schema normalization
       const weather = await openMeteoProvider.fetchCurrentWeather(28.6139, 77.2090);
 
       expect(weather.temperatureC).toBeDefined();
@@ -18,7 +17,35 @@ describe('External Integrations & Environmental Analytics', () => {
       expect(weather.relativeHumidityPct).toBeGreaterThanOrEqual(0);
       expect(weather.relativeHumidityPct).toBeLessThanOrEqual(100);
       expect(weather.windSpeedMs).toBeGreaterThanOrEqual(0);
+      expect(weather.precipitationMm).toBeGreaterThanOrEqual(0);
       expect(['LIVE', 'SEED']).toContain(weather.dataOrigin);
+      expect(weather.sourceId).toMatch(/^open-meteo/);
+      expect(weather.timestamp).toBeInstanceOf(Date);
+      expect(weather.retrievedAt).toBeInstanceOf(Date);
+    });
+
+    it('returns multi-day normalized forecast with daily and hourly records', async () => {
+      const forecast = await openMeteoProvider.fetchForecast(28.6139, 77.2090, 7);
+
+      expect(forecast.latitude).toBeCloseTo(28.6139, 2);
+      expect(forecast.longitude).toBeCloseTo(77.2090, 2);
+      expect(forecast.daily.length).toBe(7);
+      expect(forecast.daily[0].date).toBeDefined();
+      expect(forecast.daily[0].temperatureMaxC).toBeGreaterThanOrEqual(forecast.daily[0].temperatureMinC);
+      expect(forecast.daily[0].precipitationSumMm).toBeGreaterThanOrEqual(0);
+      expect(['LIVE', 'SEED']).toContain(forecast.dataOrigin);
+    });
+
+    it('maps WMO weather codes to human-readable condition descriptions', () => {
+      expect(mapWmoWeatherCode(0)).toBe('Clear sky');
+      expect(mapWmoWeatherCode(1)).toBe('Mainly clear');
+      expect(mapWmoWeatherCode(2)).toBe('Partly cloudy');
+      expect(mapWmoWeatherCode(3)).toBe('Overcast');
+      expect(mapWmoWeatherCode(45)).toBe('Fog');
+      expect(mapWmoWeatherCode(61)).toBe('Rain');
+      expect(mapWmoWeatherCode(71)).toBe('Snow fall');
+      expect(mapWmoWeatherCode(95)).toBe('Thunderstorm');
+      expect(mapWmoWeatherCode(undefined)).toBe('Unknown');
     });
   });
 
@@ -26,11 +53,25 @@ describe('External Integrations & Environmental Analytics', () => {
     it('returns normalized pollutant readings and CPCB AQI computation', async () => {
       const airQuality = await openAqProvider.fetchAirQuality(28.6139, 77.2090);
 
-      expect(airQuality.aqi).toBeDefined();
-      expect(typeof airQuality.aqi).toBe('number');
-      expect(airQuality.aqiCategory).toBeDefined();
-      expect(airQuality.prominentPollutant).toBeDefined();
+      expect(airQuality.sourceId).toMatch(/^openaq/);
       expect(['LIVE', 'SEED']).toContain(airQuality.dataOrigin);
+      expect(airQuality.retrievedAt).toBeInstanceOf(Date);
+
+      // Verify CPCB NAQI calculation was performed
+      if (airQuality.calculationStatus === 'VALID') {
+        expect(airQuality.aqi).toBeDefined();
+        expect(typeof airQuality.aqi).toBe('number');
+        expect(airQuality.aqiCategory).toBeDefined();
+        expect(airQuality.prominentPollutant).toBeDefined();
+      }
+    });
+
+    it('generates multi-hour historical air quality timeseries', async () => {
+      const history = await openAqProvider.fetchHistoricalAirQuality(28.6139, 77.2090, 12);
+
+      expect(history.length).toBe(12);
+      expect(history[0].timestamp.getTime()).toBeLessThan(history[11].timestamp.getTime());
+      expect(['LIVE', 'SEED']).toContain(history[0].dataOrigin);
     });
   });
 

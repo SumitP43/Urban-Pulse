@@ -17,6 +17,8 @@ import { usersRoutes } from './modules/users/users.routes.js';
 import { locationsRoutes } from './modules/locations/locations.routes.js';
 import { riskRoutes } from './modules/risk/risk.routes.js';
 import { alertsRoutes } from './modules/alerts/alerts.routes.js';
+import { weatherRoutes } from './modules/weather/weather.routes.js';
+import { airQualityRoutes } from './modules/air-quality/air-quality.routes.js';
 import { adapterRoutes } from './modules/frontend-adapter/adapter.routes.js';
 
 export function buildApp(): FastifyInstance {
@@ -156,6 +158,8 @@ export function buildApp(): FastifyInstance {
   app.register(locationsRoutes, { prefix: '/api/v1/locations' });
   app.register(riskRoutes, { prefix: '/api/v1/risk' });
   app.register(alertsRoutes, { prefix: '/api/v1/alerts' });
+  app.register(weatherRoutes, { prefix: '/api/v1/weather' });
+  app.register(airQualityRoutes, { prefix: '/api/v1/air-quality' });
 
   // Register Frontend Compatibility Adapter (supports existing frontend endpoints)
   app.register(adapterRoutes);
