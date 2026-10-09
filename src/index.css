@@ -1,0 +1,313 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface-tint: #0053db;
+  --color-border-strong: #CBD5E1;
+  --color-inverse-on-surface: #eef0ff;
+  --color-critical-red: #DC2626;
+  --color-surface-canvas: #F8FAFC;
+  --color-on-primary-container: #eeefff;
+  --color-surface-dim: #d2d9f4;
+  --color-dark-canvas: #020617;
+  --color-dark-border: #334155;
+  --color-primary-container: #2563eb;
+  --color-on-secondary-fixed-variant: #005320;
+  --color-primary-fixed: #dbe1ff;
+  --color-on-secondary-container: #007230;
+  --color-on-error: #ffffff;
+  --color-primary-fixed-dim: #b4c5ff;
+  --color-surface-variant: #dae2fd;
+  --color-surface: #faf8ff;
+  --color-on-primary-fixed: #00174b;
+  --color-outline: #737686;
+  --color-surface-container-highest: #dae2fd;
+  --color-surface-container-high: #e2e7ff;
+  --color-secondary: #006e2d;
+  --color-tertiary-container: #a65900;
+  --color-text-muted: #64748B;
+  --color-error-container: #ffdad6;
+  --color-dark-surface: #0F172A;
+  --color-on-tertiary: #ffffff;
+  --color-on-surface: #131b2e;
+  --color-primary: #004ac6;
+  --color-surface-container-lowest: #ffffff;
+  --color-border-subtle: #E2E8F0;
+  --color-on-background: #131b2e;
+  --color-tertiary-fixed: #ffdcc3;
+  --color-text-body: #334155;
+  --color-on-primary-fixed-variant: #003ea8;
+  --color-on-tertiary-fixed-variant: #6e3900;
+  --color-tertiary: #824500;
+  --color-provenance-purple: #7E22CE;
+  --color-inverse-primary: #b4c5ff;
+  --color-on-tertiary-fixed: #2f1500;
+  --color-on-secondary-fixed: #002109;
+  --color-on-primary: #ffffff;
+  --color-on-surface-variant: #434655;
+  --color-surface-container-low: #f2f3ff;
+  --color-tertiary-fixed-dim: #ffb77d;
+  --color-secondary-fixed: #7ffc97;
+  --color-domain-water: #0E7490;
+  --color-brand-hover: #1D4ED8;
+  --color-brand-focus: #3B82F6;
+  --color-secondary-fixed-dim: #62df7d;
+  --color-on-error-container: #93000a;
+  --color-surface-bright: #faf8ff;
+  --color-error: #ba1a1a;
+  --color-dark-card: #1E293B;
+  --color-inverse-surface: #283044;
+  --color-outline-variant: #c3c6d7;
+  --color-surface-container: #eaedff;
+  --color-brand-tint: #EFF6FF;
+  --color-surface-card: #FFFFFF;
+  --color-background: #faf8ff;
+  --color-on-tertiary-container: #ffede1;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #7cf994;
+
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2rem;
+
+  --font-display-hero: 'Inter', sans-serif;
+  --font-headline-lg: 'Inter', sans-serif;
+  --font-headline-md: 'Inter', sans-serif;
+  --font-headline-sm: 'Inter', sans-serif;
+  --font-body-lg: 'Inter', sans-serif;
+  --font-body-default: 'Inter', sans-serif;
+  --font-body-medium: 'Inter', sans-serif;
+  --font-body-compact: 'Inter', sans-serif;
+  --font-micro-meta: 'Inter', sans-serif;
+  --font-citation-ref: 'JetBrains Mono', monospace;
+  --font-label-code: 'JetBrains Mono', monospace;
+}
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-surface-canvas);
+    color: var(--color-text-body);
+    font-family: var(--font-body-default);
+  }
+  
+  /* Custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+/* Custom typography classes matching design system tokens */
+.font-display-hero {
+  font-family: 'Inter', sans-serif;
+  font-size: 36px;
+  line-height: 44px;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+}
+
+.font-headline-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.015em;
+  font-weight: 700;
+}
+
+.font-headline-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.font-headline-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0em;
+  font-weight: 600;
+}
+
+.font-body-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: 0em;
+  font-weight: 400;
+}
+
+.font-body-default {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0em;
+  font-weight: 400;
+}
+
+.font-body-medium {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0em;
+  font-weight: 500;
+}
+
+.font-body-compact {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.005em;
+  font-weight: 400;
+}
+
+.font-citation-ref {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+.font-label-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0em;
+  font-weight: 500;
+}
+
+.font-micro-meta {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Dark mode styling overrides when active */
+.dark {
+  --color-surface-canvas: #020617;
+  --color-surface-card: #0F172A;
+  --color-dark-surface: #F8FAFC;
+  --color-text-body: #E2E8F0;
+  --color-text-muted: #94A3B8;
+  --color-border-subtle: #1E293B;
+  --color-border-strong: #334155;
+  --color-surface-container: #1E293B;
+  --color-surface-container-low: #0F172A;
+  --color-surface-container-high: #334155;
+  --color-brand-tint: #1E293B;
+}
+
+.dark body {
+  background-color: #020617;
+  color: #E2E8F0;
+}
+
+/* ========================================================
+   DEDICATED PRINT STYLESHEET FOR CIVIC DOCUMENTATION REPORTS
+   ======================================================== */
+@media print {
+  @page {
+    margin: 12mm 15mm;
+    size: A4 portrait;
+  }
+
+  /* Reset body and background */
+  html, body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 10.5pt !important;
+    line-height: 1.45 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide app navigation, chrome, modal overlays, tooltips, buttons */
+  header,
+  aside,
+  nav,
+  button,
+  input,
+  .no-print,
+  [class*="print:hidden"],
+  .fixed.inset-0:not(.print-container) {
+    display: none !important;
+  }
+
+  /* Show printable report container */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Clean section breaks and avoid awkward splits */
+  .break-inside-avoid,
+  .print-avoid-break,
+  article,
+  tr,
+  figure {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  h1, h2, h3, h4, .print-header {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    color: #0f172a !important;
+  }
+
+  /* High contrast table styling */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 8pt !important;
+    margin-bottom: 12pt !important;
+  }
+
+  th, td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 5pt 7pt !important;
+    font-size: 9pt !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+  }
+}

@@ -1,0 +1,97 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: urbanpulse_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-urbanpulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-urbanpulse_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-urbanpulse_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/prisma/migrations/postgis_init.sql:/docker-entrypoint-initdb.d/10_postgis.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-urbanpulse} -d ${POSTGRES_DB:-urbanpulse_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: urbanpulse_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: urbanpulse_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urbanpulse}:${POSTGRES_PASSWORD:-urbanpulse_secret}@postgres:5432/${POSTGRES_DB:-urbanpulse_db}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-insecure_development_jwt_secret_key_at_least_32_chars_long}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-insecure_development_jwt_refresh_secret_at_least_32_chars}
+      ML_SERVICE_URL: http://ml-service:8000
+      OPENAQ_API_KEY: ${OPENAQ_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: urbanpulse_worker
+    restart: unless-stopped
+    command: ["npm", "run", "start:worker"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-urbanpulse}:${POSTGRES_PASSWORD:-urbanpulse_secret}@postgres:5432/${POSTGRES_DB:-urbanpulse_db}?schema=public
+      REDIS_URL: redis://redis:6379
+      ML_SERVICE_URL: http://ml-service:8000
+      OPENAQ_API_KEY: ${OPENAQ_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
+    container_name: urbanpulse_ml
+    restart: unless-stopped
+    environment:
+      PORT: 8000
+      HOST: 0.0.0.0
+    ports:
+      - "${ML_PORT:-8000}:8000"
+
+volumes:
+  postgres_data:
+  redis_data:
